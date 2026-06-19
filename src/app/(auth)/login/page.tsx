@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { authClient } from '@/lib/auth-client';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -13,10 +14,14 @@ export default function LoginPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async() => {
     // Implement Google OAuth trigger here
     // Remember to set default user role as "Tenant" on backend for social login
     console.log('Google login clicked');
+    const data = await authClient.signIn.social({
+      provider:'google'
+    });
+    console.log("google login response:", data);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
