@@ -18,5 +18,31 @@ export const auth = betterAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string, 
         }, 
     },
+    user: {
+        additionalFields: {
+            role: {
+                type: "string",
+                default: "tenant",
+            }
+        }
+    },
+    databaseHooks: {
+        user: {
+            create: {
+                before: async (user:any, ctx:any) => {
+                    return {
+                        data: {
+                            ...user,
+                            // Fallback to "tenant" if a role isn't explicitly provided (like during OAuth)
+                            role: user.role || "tenant",
+                        },
+                    };
+                },
+            },
+        },
+    },
+    logger: {
+        level: "debug",
+    }
     
 });

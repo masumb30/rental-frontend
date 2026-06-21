@@ -38,7 +38,7 @@ export default function SignupPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#0B0F19] px-4">
-            <div className="w-full max-w-md bg-[#151D30] p-8 rounded-2xl border border-gray-800 shadow-2xl">
+            <div className="w-full max-w-md bg-[#151D30] p-8 my-4 rounded-2xl border border-gray-800 shadow-2xl">
                 <div className="text-center mb-6">
                     <h2 className="text-3xl font-bold text-white tracking-tight">Create Account</h2>
                     <p className="text-sm text-gray-400 mt-1">Sign up to get started</p>
@@ -48,7 +48,7 @@ export default function SignupPage() {
                 <button
                     onClick={handleGoogleLogin}
                     type="button"
-                    className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-700 rounded-xl text-sm font-medium text-gray-200 bg-[#1E293B] hover:bg-[#273549] transition-all mb-6"
+                    className="cursor-pointer w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-700 rounded-xl text-sm font-medium text-gray-200 bg-[#1E293B] hover:bg-[#273549] transition-all mb-6"
                 >
                     <svg className="h-5 w-5" viewBox="0 0 24 24">
                         <path fill="#EA4335" d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.58 14.97 1 12 1 7.21 1 3.14 3.74 1.24 7.72l3.82 2.96C6 7.42 8.78 5.04 12 5.04z" />
@@ -120,7 +120,7 @@ export default function SignupPage() {
 
                     <button
                         type="submit"
-                        className="w-full py-3 px-4 mt-2 rounded-xl bg-linear-to-r from-indigo-500 to-purple-600 text-white font-medium hover:from-indigo-600 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/10"
+                        className="cursor-pointer w-full py-3 px-4 mt-2 rounded-xl bg-linear-to-r from-indigo-500 to-purple-600 text-white font-medium hover:from-indigo-600 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/10"
                     >
                         Sign Up
                     </button>

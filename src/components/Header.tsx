@@ -3,8 +3,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, User, LogOut, ChevronDown, Building2, Home, Search, LayoutDashboard } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
 
 const Header = () => {
+    const { data } = authClient.useSession();
+    console.log("User session data:", data);
     const [isOpen, setIsOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -46,10 +49,12 @@ const Header = () => {
                         ))}
 
                         {/* Dashboard Dropdown */}
+                        {
+                         data?.user?.id &&
                         <div className="relative">
                             <button
                                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                                className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 font-medium transition-colors"
+                                className="flex items-center space-x-1 text-gray-200 hover:text-blue-600 font-medium transition-colors"
                             >
                                 <span>Dashboard</span>
                                 <ChevronDown className={`w-4 h-4 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
@@ -75,17 +80,31 @@ const Header = () => {
                                 </div>
                             )}
                         </div>
+                           
+                        }
 
                         <div className="flex items-center space-x-4 ml-4">
-                            <Link href="/login" className="text-gray-600 hover:text-blue-600 font-medium">
-                                Login
-                            </Link>
-                            <Link
-                                href="/register"
-                                className="bg-blue-600 text-white px-5 py-2.5 rounded-full font-medium hover:bg-blue-700 transition-all shadow-md shadow-blue-200 hover:shadow-lg active:scale-95"
-                            >
-                                Register
-                            </Link>
+                            {
+                                data?.user?.id ?
+                                    <button
+                                        onClick={() => authClient.signOut()}
+                                        className="text-gray-600 hover:text-blue-600 font-medium">
+                                        Logout
+                                    </button> :
+                                    <Link href="/login" className="text-gray-600 hover:text-blue-600 font-medium">
+                                        Login
+                                    </Link>
+                            }
+
+                            {
+                                !data?.user?.id &&
+                                <Link
+                                    href="/register"
+                                    className="bg-blue-600 text-white px-5 py-2.5 rounded-full font-medium hover:bg-blue-700 transition-all shadow-md shadow-blue-200 hover:shadow-lg active:scale-95"
+                                >
+                                    Register
+                                </Link>
+                            }
                         </div>
                     </nav>
 
