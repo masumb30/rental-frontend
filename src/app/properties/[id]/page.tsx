@@ -22,9 +22,9 @@ const propertyDetails = {
     size: 1550,
     images: [
         "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200",
-        "https://images.unsplash.com/photo-1600607687940-4e52485e5d1c?auto=format&fit=crop&q=80&w=600",
-        "https://images.unsplash.com/photo-1600566753190-17f0bb2a6c3e?auto=format&fit=crop&q=80&w=600",
-        "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=600"
+        // "https://images.unsplash.com/photo-1600607687940-4e52485e5d1c?auto=format&fit=crop&q=80&w=600",
+        // "https://images.unsplash.com/photo-1600566753190-17f0bb2a6c3e?auto=format&fit=crop&q=80&w=600",
+        // "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=600"
     ],
     features: ["Air Conditioning", "WiFi", "Gym access", "Private Balcony", "Smart Lock", "Pet Friendly", "Washer/Dryer", "Garbage Disposal"],
     owner: {
@@ -47,25 +47,32 @@ export default function PropertyDetailsPage() {
     const [isFavorited, setIsFavorited] = useState(false);
 
     return (
-        <div className="min-h-screen bg-white dark:bg-gray-950 pt-32 pb-24">
+        <div className="min-h-screen bg-white dark:bg-gray-950 pt-14 pb-24">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Gallery Header */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12 ">
                     <div className="lg:col-span-2 rounded-[2rem] overflow-hidden shadow-xl aspect-[16/10]">
                         <img src={propertyDetails.images[activeImage]} alt="Main View" className="w-full h-full object-cover" />
                     </div>
-                    <div className="flex flex-col gap-4">
-                        {propertyDetails.images.slice(0, 4).map((img, i) => (
-                            <div
-                                key={i}
-                                onClick={() => setActiveImage(i)}
-                                className={`relative cursor-pointer rounded-2xl overflow-hidden h-1/4 group border-4 transition-all duration-300 ${activeImage === i ? 'border-blue-600 scale-[1.02]' : 'border-transparent'}`}
-                            >
-                                <img src={img} alt={`Thumb ${i}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
-                                <div className={`absolute inset-0 bg-black/20 ${activeImage === i ? 'hidden' : 'block'}`}></div>
-                            </div>
-                        ))}
+
+                    <div className="flex flex-col justify-between">
+                        {
+                            propertyDetails.images.length === 1 ? <div className="flex items-center justify-center h-full text-gray-500 italic " >
+                                <p className="text-lg border rounded-2xl p-5 w-full text-center">No More Images Available</p>
+                            </div> :
+
+                                propertyDetails.images.slice(0, 4).map((img, i) => (
+                                    <div
+                                        key={i}
+                                        onClick={() => setActiveImage(i)}
+                                        className={`relative cursor-pointer rounded-2xl overflow-hidden h-1/4 group border-4 transition-all duration-300 ${activeImage === i ? 'border-blue-600 scale-[1.02]' : 'border-transparent'}`}
+                                    >
+                                        <img src={img} alt={`Thumb ${i}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                                        <div className={`absolute inset-0 bg-black/20 ${activeImage === i ? 'hidden' : 'block'}`}></div>
+                                    </div>
+                                ))}
                     </div>
+
                 </div>
 
                 {/* Info Grid */}
