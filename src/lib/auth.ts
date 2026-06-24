@@ -11,6 +11,7 @@ export const auth = betterAuth({
     baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL as string,
     emailAndPassword: {
         enabled: true,
+        autoSignIn:false,
     },
     socialProviders: {
         google: { 
@@ -46,3 +47,5 @@ export const auth = betterAuth({
     }
     
 });
+
+type Session = typeof auth.$Infer.Session;
