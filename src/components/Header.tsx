@@ -4,8 +4,10 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, LogOut, ChevronDown, Building2, Home, Search, LayoutDashboard, ShieldAlert } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 const Header = () => {
+    const router = useRouter();
     const { data } = authClient.useSession();
     const [isOpen, setIsOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -45,6 +47,7 @@ const Header = () => {
 
     const handleLogout = async () => {
         await authClient.signOut();
+        router.refresh(); // Refresh the page to update the UI after logout
         setIsOpen(false);
         setIsProfileOpen(false);
     };
