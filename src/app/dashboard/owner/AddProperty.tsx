@@ -28,7 +28,8 @@ const propertyDummyData = [
         baths: "2",
         size: "1850",
         amenities: "WiFi, Gym Access, Swimming Pool, 24/7 Security, Underground Parking",
-        features: "Smart Lock, Wine Cooler, Floor-to-Ceiling Windows, Wrap-around Balcony, Private Roofdeck"
+        features: "Smart Lock, Wine Cooler, Floor-to-Ceiling Windows, Wrap-around Balcony, Private Roofdeck",
+        images: ["https://i.ibb.co/qLsY74hr/05643f2693cb933a5c70dab8ce13d8e9-full.jpg", "https://i.ibb.co/Z6pTZ4Zh/images-1.jpg"]
     },
     {
         title: "Luxury Waterfront Villa",
@@ -41,7 +42,8 @@ const propertyDummyData = [
         baths: "6",
         size: "4200",
         amenities: "High-Speed WiFi, Infinity Pool, Private Beach Access, Outdoor Kitchen, Spa Hot Tub",
-        features: "Boat Dock, Chef's Kitchen, Smart Climate Control, Tropical Garden, Electric Vehicle Charger"
+        features: "Boat Dock, Chef's Kitchen, Smart Climate Control, Tropical Garden, Electric Vehicle Charger",
+        images: ["https://i.ibb.co/VcKKT6sk/5f7ef552be762a670f822d0def92ea96-p-c.jpg", "https://i.ibb.co/fdpGSPG7/images-3.jpg"]
     },
     {
         title: "Charming Suburban Family House",
@@ -54,7 +56,106 @@ const propertyDummyData = [
         baths: "2.5",
         size: "2100",
         amenities: "WiFi, Central Heating, Laundry Room, Pet Friendly, Playground Access",
-        features: "Fenced Backyard, Finished Basement Studio, 2-Car Garage, Fireplace, Recently Renovated"
+        features: "Fenced Backyard, Finished Basement Studio, 2-Car Garage, Fireplace, Recently Renovated",
+        images: ["https://i.ibb.co/RkjqxhBp/house-2483336-1280.jpg", "https://i.ibb.co/jPPfmc5P/4180467cc559deb550201886f8bfe67f-full.jpg"]
+    },
+    {
+        title: "Sleek Industrial Urban Loft",
+        description: "An architectural marvel featuring exposed brick walls, towering timber ceilings, factory-style windows, and an ultra-modern kitchen tailored for urban trendsetters.",
+        location: "88 Brickworks Boulevard, Arts District",
+        type: "Loft",
+        price: "1850",
+        cycle: "Monthly",
+        beds: "1",
+        baths: "1.5",
+        size: "1100",
+        amenities: "Fiber Optic Internet, Bike Storage, Rooftop Lounge, Laundry In-Unit",
+        features: "Exposed Brick, Double Height Ceilings, Custom Track Lighting, Industrial Finishes",
+        images: ["https://i.ibb.co/dw9bKQvf/2.webp", "https://i.ibb.co/wNhMDwjB/fb83ff0330c2e2a012f7caa5e2a4aad5-p-e.jpg"]
+    },
+    {
+        title: "Cozy A-Frame Mountain Cabin",
+        description: "Escape to the woods in this picturesque A-frame retreat. Features a wood-burning stone fireplace, an expansive wrap-around cedar deck, and breathtaking alpine valley views.",
+        location: "404 Timberline Ridge, Whispering Pines",
+        type: "Cabin",
+        price: "220",
+        cycle: "Daily",
+        beds: "2",
+        baths: "1",
+        size: "950",
+        amenities: "WiFi, Wood Stove, Hot Tub, BBQ Grill, Fire Pit",
+        features: "Mountain Views, Wood-burning Fireplace, Cedar Deck, Secluded Location",
+        images: ["https://i.ibb.co/fzR2sfHV/113-chalifour-street-fort-mcmurray-A2319969-1-p480.webp", "https://i.ibb.co/Mx6hTsRj/images-2.jpg"]
+    },
+    {
+        title: "Elegant Coastal Bungalow",
+        description: "Sun-drenched seaside retreat steps away from sandy beaches. Highlights include whitewashed shiplap interior details, a screened-in sunroom porch, and a private outdoor surfboard rinse shower.",
+        location: "14 Ocean Breeze Court, sunny Shores",
+        type: "Bungalow",
+        price: "1200",
+        cycle: "Weekly",
+        beds: "3",
+        baths: "2",
+        size: "1600",
+        amenities: "Beach Access, WiFi, Air Conditioning, Beach Chairs Provided, Cruiser Bikes",
+        features: "Sunroom, Outdoor Shower, Shiplap Walls, Ocean View, Coastal Decor",
+        images: ["https://i.ibb.co/d0b1CFnW/11103-2781-chinook-winds-drive-south-west-airdrie-A2298961-1-p480.webp", "https://i.ibb.co/XxMxdysF/images-4.jpg"]
+    },
+    {
+        title: "Opulent Mediterranean Mansion",
+        description: "Sprawling luxury estate showcasing grand stucco arches, custom wrought iron detailing, a master resort-style pool pavilion, wine tasting cellar, and separate detached guest house quarters.",
+        location: "22 Cypress Hills Drive, Crestview Heights",
+        type: "Mansion",
+        price: "12000",
+        cycle: "Monthly",
+        beds: "7",
+        baths: "8.5",
+        size: "8500",
+        amenities: "Home Theater, Wine Cellar, Tennis Court, Infinity Pool, Smart Home Automation, Gym",
+        features: "Guest House, Grand Foyer, Stucco Arches, Chef's Prep Kitchen, Courtyard",
+        images: ["https://i.ibb.co/JWV4nLgj/2faaffb4177c67975cd643552ec56e56l-m3047098683od-w480-h360.webp", "https://i.ibb.co/sGjpLzf/gen-Islno-Resize-3807633-0.webp"]
+    },
+    {
+        title: "Compact Smart Studio Apartment",
+        description: "Efficiently engineered living space boasting space-saving convertible furniture, fully integrated IoT controls, high-end built-in European cabinetry, and a private balcony overlooking downtown.",
+        location: "505 Neon Way, Cyber District",
+        type: "Apartment",
+        price: "950",
+        cycle: "Monthly",
+        beds: "Studio",
+        baths: "1",
+        size: "450",
+        amenities: "High-Speed Internet, Roof Deck Access, Parcel Lockers, Package Concierge",
+        features: "Murphy Bed Setup, Voice Activated Lights, Motorized Blinds, City Skyline Views",
+        images: ["https://i.ibb.co/hJky11Ss/e240a52bd4161f4b91e6a1a4e4139b59l-m2704172491od-w480-h360.webp", "https://i.ibb.co/Z6pTZ4Zh/images-1.jpg"]
+    },
+    {
+        title: "Rustic Revitalized Farmhouse",
+        description: "A gorgeous blend of historic charm and modern utility. Showcases authentic exposed original structural beams, a massive wrap-around front porch, and premium upgraded kitchen standard appliances.",
+        location: "177 Old Orchard Lane, Greenfield",
+        type: "House",
+        price: "600",
+        cycle: "Weekly",
+        beds: "4",
+        baths: "3",
+        size: "3200",
+        amenities: "WiFi, Vegetable Garden Patch, Barn Storage, Pet Friendly, Washer/Dryer",
+        features: "Exposed Beams, Wrap-around Porch, Farmhouse Sink, Solar Panels",
+        images: ["https://i.ibb.co/wNhMDwjB/fb83ff0330c2e2a012f7caa5e2a4aad5-p-e.jpg", "https://i.ibb.co/VcKKT6sk/5f7ef552be762a670f822d0def92ea96-p-c.jpg"]
+    },
+    {
+        title: "Ultra-Modern Glass Sanctuary",
+        description: "Architectural masterpiece built predominantly of steel, matte concrete, and architectural structural glass. Immersed fully in nature while keeping you fully connected through state of the art home automation.",
+        location: "909 Zenith Canyon Ridge, Vista Point",
+        type: "Villa",
+        price: "900",
+        cycle: "Daily",
+        beds: "4",
+        baths: "4.5",
+        size: "3900",
+        amenities: "Infinity Pool, Tesla Wall Charger, Smart HVAC, Gated Entrance, Private Gym",
+        features: "Glass Walls, Radiant Floor Heating, Cantilevered Balcony, Minimalist Finishes",
+        images: ["https://i.ibb.co/jPPfmc5P/4180467cc559deb550201886f8bfe67f-full.jpg", "https://i.ibb.co/Mx6hTsRj/images-2.jpg"]
     }
 ];
 
@@ -87,7 +188,8 @@ const AddProperty = () => {
         e.preventDefault();
         const randomProperty = propertyDummyData[Math.floor(Math.random() * propertyDummyData.length)];
         setFormData(randomProperty);
-        console.log("🎲 Form state auto-filled with:", randomProperty.title);
+        setUploadedUrls(randomProperty.images);
+        console.log("🎲 Form state auto-filled with:", randomProperty);
     };
 
     const uploadImagesToImgBB = async (files: FileList | File[]) => {
@@ -140,7 +242,7 @@ const AddProperty = () => {
             }
         }
 
-        console.log('🎉 All selected images have processed uploading requests!');
+        console.log('🎉 All selected images have processed uploading requests!', localUrlTracker);
         setIsUploading(false);
     };
 
@@ -153,7 +255,7 @@ const AddProperty = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
+
         const session = await authClient.getSession();
         const token = session?.data?.session?.token;
 
@@ -225,12 +327,12 @@ const AddProperty = () => {
                     <label className="text-xs font-bold uppercase tracking-wider text-gray-400">Property Title</label>
                     <input name="title" value={formData.title} onChange={handleChange} type="text" placeholder="e.g. Modern Villa with Pool" className="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium" required />
                 </div>
-                
+
                 <div className="space-y-4 col-span-2">
                     <label className="text-xs font-bold uppercase tracking-wider text-gray-400">Description</label>
                     <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Describe the lifestyle and key features..." className="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl h-32 outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium" required />
                 </div>
-                
+
                 <div className="space-y-4">
                     <label className="text-xs font-bold uppercase tracking-wider text-gray-400">Location</label>
                     <div className="relative">
@@ -238,7 +340,7 @@ const AddProperty = () => {
                         <input name="location" value={formData.location} onChange={handleChange} type="text" placeholder="Full address" className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl outline-none" required />
                     </div>
                 </div>
-                
+
                 <div className="space-y-4">
                     <label className="text-xs font-bold uppercase tracking-wider text-gray-400">Property Type</label>
                     <select name="type" value={formData.type} onChange={handleChange} className="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl outline-none appearance-none">
@@ -247,7 +349,7 @@ const AddProperty = () => {
                         <option value="Villa">Villa</option>
                     </select>
                 </div>
-                
+
                 <div className="space-y-4">
                     <label className="text-xs font-bold uppercase tracking-wider text-gray-400">Rent Price</label>
                     <div className="relative">
@@ -255,7 +357,7 @@ const AddProperty = () => {
                         <input name="price" value={formData.price} onChange={handleChange} type="number" placeholder="0.00" className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl outline-none" required />
                     </div>
                 </div>
-                
+
                 <div className="space-y-4">
                     <label className="text-xs font-bold uppercase tracking-wider text-gray-400">Rent Cycle</label>
                     <select name="cycle" value={formData.cycle} onChange={handleChange} className="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl outline-none appearance-none">
@@ -264,7 +366,7 @@ const AddProperty = () => {
                         <option value="Daily">Daily</option>
                     </select>
                 </div>
-                
+
                 <div className="grid grid-cols-3 gap-4 col-span-2">
                     <div className="space-y-2">
                         <label className="text-[10px] font-bold text-gray-400 uppercase">Beds</label>
@@ -289,7 +391,7 @@ const AddProperty = () => {
                     <textarea name="features" value={formData.features} onChange={handleChange} placeholder="Add comma separated features... " className="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-2xl h-32 outline-none focus:ring-2 focus:ring-blue-600 transition-all font-medium" required />
                 </div>
 
-                
+
                 <div className="space-y-4 col-span-2">
                     <label className="text-xs font-bold uppercase tracking-wider text-gray-400">Images</label>
                     <div className="relative border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-[2rem] p-12 text-center space-y-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all cursor-pointer">
