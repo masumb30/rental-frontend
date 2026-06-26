@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UsersTab from './UsersTab';
+import PropertiesTab from './PropertiesTab';
 
 const allUsers = [
     { id: 1, name: "John Doe", email: "john@example.com", role: "Tenant", joined: "Jan 12, 2024" },
@@ -33,7 +34,6 @@ const transactions = [
 
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('users');
-    const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
 
     const tabs = [
         { id: 'users', name: 'All Users', icon: Users },
@@ -74,44 +74,7 @@ export default function AdminDashboard() {
                         )}
 
                         {activeTab === 'properties' && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                                <h3 className="text-2xl font-black">Property Approval Queue</h3>
-                                <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
-                                    <table className="w-full text-left">
-                                        <thead>
-                                            <tr className="bg-gray-50/80 dark:bg-gray-800/50">
-                                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Property & Owner</th>
-                                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Submitted</th>
-                                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                                            {pendingProperties.map((p) => (
-                                                <tr key={p.id} className="hover:bg-gray-50/50 transition-colors">
-                                                    <td className="px-8 py-6">
-                                                        <div>
-                                                            <p className="font-black text-gray-900 dark:text-white">{p.title}</p>
-                                                            <p className="text-xs text-gray-400 italic">Owner: {p.owner} • {p.location}</p>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-8 py-6 text-sm text-gray-500 font-medium">{p.date}</td>
-                                                    <td className="px-8 py-6 text-right">
-                                                        <div className="flex justify-end gap-2">
-                                                            <button className="bg-green-600 text-white p-2.5 rounded-xl hover:bg-green-700 shadow-lg shadow-green-500/20 active:scale-95 transition-all"><Check className="w-5 h-5" /></button>
-                                                            <button
-                                                                onClick={() => setIsRejectModalOpen(true)}
-                                                                className="bg-red-50 text-red-600 p-2.5 rounded-xl hover:bg-red-600 hover:text-white transition-all active:scale-95"
-                                                            >
-                                                                <CloseIcon className="w-5 h-5" />
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </motion.div>
+                            <PropertiesTab/>
                         )}
 
                         {/* Other tabs follow the same pattern... */}
@@ -134,35 +97,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Reject Modal */}
-            <AnimatePresence>
-                {isRejectModalOpen && (
-                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsRejectModalOpen(false)} className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="relative bg-white dark:bg-gray-900 w-full max-w-xl rounded-[3rem] p-12 shadow-2xl"
-                        >
-                            <div className="flex justify-between items-center mb-10">
-                                <h3 className="text-2xl font-black">Rejection Feedback</h3>
-                                <button onClick={() => setIsRejectModalOpen(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"><CloseIcon className="w-6 h-6" /></button>
-                            </div>
-                            <div className="space-y-6">
-                                <p className="text-gray-500 font-medium">Please provide a reason for rejecting this property listing. The owner will see this feedback.</p>
-                                <textarea
-                                    placeholder="Describe the issues found..."
-                                    className="w-full p-6 bg-gray-50 dark:bg-gray-800 border-none rounded-3xl h-48 outline-none focus:ring-2 focus:ring-red-500 transition-all font-medium"
-                                />
-                                <div className="flex gap-4">
-                                    <button onClick={() => setIsRejectModalOpen(false)} className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 py-4 rounded-2xl font-bold hover:bg-gray-200 transition-all">Cancel</button>
-                                    <button onClick={() => setIsRejectModalOpen(false)} className="flex-[2] bg-red-600 text-white py-4 rounded-2xl font-bold hover:bg-red-700 transition-all shadow-xl shadow-red-500/20">Confirm Rejection</button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+            
         </div>
     );
 }
