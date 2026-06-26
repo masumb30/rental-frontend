@@ -5,9 +5,12 @@ import {
     Users, Building, ShoppingBag, CreditCard,
     Search, Shield, Check, X as CloseIcon,
     MessageSquare, MoreHorizontal, ChevronRight,
-    UserPlus, CheckCircle2, AlertTriangle, Filter
+    UserPlus, CheckCircle2, AlertTriangle, Filter,
+    Trash
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast, ToastContainer } from 'react-toastify';
+import { authClient } from '@/lib/auth-client';
 
 const PropertiesTab = () => {
 
@@ -67,8 +70,40 @@ const PropertiesTab = () => {
 
         return `${day}${suffix} ${month} ${year}`;
     }
+    const handleDelete = async (id: string) => {
+        try {
+            setIsRejectModalOpen(false);
+            const session = await authClient.getSession();
+            const token = session?.data?.session?.token;
+
+            if (!token) {
+                console.error("🔒 Unauthorized: No Better Auth session found.");
+                toast.error("🔒 Unauthorized: Please log in to delete a property.");
+                return;
+            }
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/properties/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete property');
+            }
+
+            // Success feedback
+            toast.success(`Successfully deleted property with ID: ${id}!`);
+            setUpdateOccurred(updateOccured + 1);
+        } catch (error: any) {
+            console.error("❌ Delete error:", error);
+            toast.error(error.message || "Failed to delete property. Please try again.");
+        }
+    };
     return (
         <>
+        <ToastContainer autoClose={1500} position="top-right" theme="dark" />
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                 <h3 className="text-2xl text-gray-200">Property Approval Queue</h3>
                 <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
@@ -76,7 +111,7 @@ const PropertiesTab = () => {
                         <thead>
                             <tr className="bg-gray-50/80 dark:bg-gray-800/50">
                                 <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Property & Owner</th>
-                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Submitted</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest hidden md:table-cell">Submitted</th>
                                 <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
                                 <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
                             </tr>
@@ -91,18 +126,27 @@ const PropertiesTab = () => {
                                             <p className="text-xs text-gray-400 italic">Owner: {p.ownerInfo.name}</p>
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6 text-sm text-gray-500 font-medium">Added On:<br/> {formatReadableDate(p.createdAt)}</td>
+                                    <td className="px-8 hidden md:table-cell py-6 text-sm text-gray-500 font-medium">Added On:<br /> {formatReadableDate(p.createdAt)}</td>
                                     <td className="px-8 py-6 text-sm text-gray-500 font-medium">{p.status}</td>
                                     <td className="px-8 py-6 text-right">
+
                                         <div className="flex justify-end gap-2">
-                                            <button className="bg-green-600 text-white p-2.5 rounded-xl hover:bg-green-700 shadow-lg shadow-green-500/20 active:scale-95 transition-all"><Check className="w-5 h-5" /></button>
+                                            {
+                                                p.status.toLowerCase() === 'pending' &&
+
+                                                <button className="bg-green-600 text-white p-2.5 rounded-xl hover:bg-green-700 shadow-lg shadow-green-500/20 active:scale-95 transition-all"><Check className="w-5 h-5" /></button>
+                                            }
                                             <button
                                                 onClick={() => setIsRejectModalOpen(true)}
                                                 className="bg-red-50 text-red-600 p-2.5 rounded-xl hover:bg-red-600 hover:text-white transition-all active:scale-95"
                                             >
                                                 <CloseIcon className="w-5 h-5" />
                                             </button>
+                                            <button onClick={()=>handleDelete(p._id)} className="bg-red-600 text-white p-2.5 rounded-xl hover:bg-red-700 shadow-lg shadow-green-500/20 active:scale-95 transition-all"><Trash className="w-5 h-5" /></button>
                                         </div>
+
+
+
                                     </td>
                                 </tr>
                             ))}
@@ -110,6 +154,8 @@ const PropertiesTab = () => {
                     </table>
                 </div>
             </motion.div>
+
+
             <AnimatePresence>
                 {isRejectModalOpen && (
                     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
@@ -143,4 +189,5 @@ const PropertiesTab = () => {
     )
 }
 
-export default PropertiesTab
+
+export default PropertiesTab;
