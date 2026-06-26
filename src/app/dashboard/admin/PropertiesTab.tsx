@@ -13,7 +13,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { authClient } from '@/lib/auth-client';
 
 const PropertiesTab = () => {
-
+    const [currentPropertyId, setCurrentPropertyId] = useState<string | null>(null);
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
 
     const [properties, setProperties] = useState([]);
@@ -101,9 +101,71 @@ const PropertiesTab = () => {
             toast.error(error.message || "Failed to delete property. Please try again.");
         }
     };
+    const handleReject = async (id: string) => {
+        try {
+            setIsRejectModalOpen(false);
+            const session = await authClient.getSession();
+            const token = session?.data?.session?.token;
+
+            if (!token) {
+                console.error("🔒 Unauthorized: No Better Auth session found.");
+                toast.error("🔒 Unauthorized: Please log in to delete a property.");
+                return;
+            }
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/properties/${id}/reject`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to reject property');
+            }
+
+            // Success feedback
+            toast.success(`Successfully rejected property with ID: ${id}!`);
+            setUpdateOccurred(updateOccured + 1);
+        } catch (error: any) {
+            console.error("❌ Reject error:", error);
+            toast.error(error.message || "Failed to reject property. Please try again.");
+        }
+    };
+    const handleApprove = async (id: string) => {
+        try {
+            setIsRejectModalOpen(false);
+            const session = await authClient.getSession();
+            const token = session?.data?.session?.token;
+
+            if (!token) {
+                console.error("🔒 Unauthorized: No Better Auth session found.");
+                toast.error("🔒 Unauthorized: Please log in to Approve a property.");
+                return;
+            }
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/properties/${id}/approve`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to approve property');
+            }
+
+            // Success feedback
+            toast.success(`Successfully approved property with ID: ${id}!`);
+            setUpdateOccurred(updateOccured + 1);
+        } catch (error: any) {
+            console.error("❌ Approve error:", error);
+            toast.error(error.message || "Failed to approve property. Please try again.");
+        }
+    };
     return (
         <>
-        <ToastContainer autoClose={1500} position="top-right" theme="dark" />
+            <ToastContainer autoClose={1500} position="top-right" theme="dark" />
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                 <h3 className="text-2xl text-gray-200">Property Approval Queue</h3>
                 <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
@@ -132,17 +194,21 @@ const PropertiesTab = () => {
 
                                         <div className="flex justify-end gap-2">
                                             {
-                                                p.status.toLowerCase() === 'pending' &&
+                                                p.status.toLowerCase() === 'pending' || p.status.toLowerCase() === 'rejected' &&
 
-                                                <button className="bg-green-600 text-white p-2.5 rounded-xl hover:bg-green-700 shadow-lg shadow-green-500/20 active:scale-95 transition-all"><Check className="w-5 h-5" /></button>
+                                                <button onClick={() => handleApprove(p._id)} className="bg-green-600 text-white p-2.5 rounded-xl hover:bg-green-700 shadow-lg shadow-green-500/20 active:scale-95 transition-all"><Check className="w-5 h-5" /></button>
                                             }
-                                            <button
-                                                onClick={() => setIsRejectModalOpen(true)}
+                                            {
+                                                p.status.toLowerCase() === 'pending' || p.status.toLowerCase() === 'approved' &&
+                                                <button
+                                                onClick={() => { setIsRejectModalOpen(true); setCurrentPropertyId(p._id) }}
                                                 className="bg-red-50 text-red-600 p-2.5 rounded-xl hover:bg-red-600 hover:text-white transition-all active:scale-95"
-                                            >
+                                                >
                                                 <CloseIcon className="w-5 h-5" />
                                             </button>
-                                            <button onClick={()=>handleDelete(p._id)} className="bg-red-600 text-white p-2.5 rounded-xl hover:bg-red-700 shadow-lg shadow-green-500/20 active:scale-95 transition-all"><Trash className="w-5 h-5" /></button>
+                                            }
+
+                                            <button onClick={() => handleDelete(p._id)} className="bg-red-600 text-white p-2.5 rounded-xl hover:bg-red-700 shadow-lg shadow-green-500/20 active:scale-95 transition-all"><Trash className="w-5 h-5" /></button>
                                         </div>
 
 
@@ -178,7 +244,7 @@ const PropertiesTab = () => {
                                 />
                                 <div className="flex gap-4">
                                     <button onClick={() => setIsRejectModalOpen(false)} className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 py-4 rounded-2xl font-bold hover:bg-gray-200 transition-all">Cancel</button>
-                                    <button onClick={() => setIsRejectModalOpen(false)} className="flex-[2] bg-red-600 text-white py-4 rounded-2xl font-bold hover:bg-red-700 transition-all shadow-xl shadow-red-500/20">Confirm Rejection</button>
+                                    <button onClick={() => { setIsRejectModalOpen(false); handleReject(currentPropertyId as string) }} className="flex-[2] bg-red-600 text-white py-4 rounded-2xl font-bold hover:bg-red-700 transition-all shadow-xl shadow-red-500/20">Confirm Rejection</button>
                                 </div>
                             </div>
                         </motion.div>
