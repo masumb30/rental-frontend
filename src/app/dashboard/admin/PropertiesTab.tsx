@@ -13,6 +13,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { authClient } from '@/lib/auth-client';
 
 const PropertiesTab = () => {
+    const [rejectionReason, setRejectionReason] = useState('');
     const [currentPropertyId, setCurrentPropertyId] = useState<string | null>(null);
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
 
@@ -26,7 +27,7 @@ const PropertiesTab = () => {
             try {
                 setLoading(true);
                 // Replace with your actual API endpoint URL
-                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/properties`, { cache: 'no-store' });
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/properties/foradmin`, { cache: 'no-store' });
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch platform properties');
@@ -118,6 +119,7 @@ const PropertiesTab = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
+                body: JSON.stringify({rejectionReason }),
             });
 
             if (!response.ok) {
@@ -127,6 +129,7 @@ const PropertiesTab = () => {
             // Success feedback
             toast.success(`Successfully rejected property with ID: ${id}!`);
             setUpdateOccurred(updateOccured + 1);
+            setRejectionReason('');
         } catch (error: any) {
             console.error("❌ Reject error:", error);
             toast.error(error.message || "Failed to reject property. Please try again.");
@@ -168,57 +171,63 @@ const PropertiesTab = () => {
             <ToastContainer autoClose={1500} position="top-right" theme="dark" />
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                 <h3 className="text-2xl text-gray-200">Property Approval Queue</h3>
-                <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="bg-gray-50/80 dark:bg-gray-800/50">
-                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Property & Owner</th>
-                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest hidden md:table-cell">Submitted</th>
-                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
-                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                            {properties.map((p: any) => (
-                                <tr key={p._id} className="hover:bg-gray-50/10 cursor-pointer  transition-colors">
-                                    <td className="px-8 py-6">
-                                        <div>
-                                            <p className="font-black text-gray-300 dark:text-white">{p.title}</p>
-                                            <p className="text-gray-200 text-sm">{p.location}</p>
-                                            <p className="text-xs text-gray-400 italic">Owner: {p.ownerInfo.name}</p>
-                                        </div>
-                                    </td>
-                                    <td className="px-8 hidden md:table-cell py-6 text-sm text-gray-500 font-medium">Added On:<br /> {formatReadableDate(p.createdAt)}</td>
-                                    <td className="px-8 py-6 text-sm text-gray-500 font-medium">{p.status}</td>
-                                    <td className="px-8 py-6 text-right">
+                {
+                    properties.length === 0 && !loading ? <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-20 text-center space-y-6 border border-gray-100 dark:border-gray-800">
+                        <p className="text-gray-200">No properties to approve.</p>
+                    </div> :
 
-                                        <div className="flex justify-end gap-2">
-                                            {
-                                                p.status.toLowerCase() === 'pending' || p.status.toLowerCase() === 'rejected' &&
+                        <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
+                            <table className="w-full text-left">
+                                <thead>
+                                    <tr className="bg-gray-50/80 dark:bg-gray-800/50">
+                                        <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Property & Owner</th>
+                                        <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest hidden md:table-cell">Submitted</th>
+                                        <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                                        <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+                                    {properties.map((p: any) => (
+                                        <tr key={p._id} className="hover:bg-gray-50/10 cursor-pointer  transition-colors">
+                                            <td className="px-8 py-6">
+                                                <div>
+                                                    <p className="font-black text-gray-300 dark:text-white">{p.title}</p>
+                                                    <p className="text-gray-200 text-sm">{p.location}</p>
+                                                    <p className="text-xs text-gray-400 italic">Owner: {p.ownerInfo.name}</p>
+                                                </div>
+                                            </td>
+                                            <td className="px-8 hidden md:table-cell py-6 text-sm text-gray-500 font-medium">Added On:<br /> {formatReadableDate(p.createdAt)}</td>
+                                            <td className="px-8 py-6 text-sm text-gray-500 font-medium">{p.status}</td>
+                                            <td className="px-8 py-6 text-right">
 
-                                                <button onClick={() => handleApprove(p._id)} className="bg-green-600 text-white p-2.5 rounded-xl hover:bg-green-700 shadow-lg shadow-green-500/20 active:scale-95 transition-all"><Check className="w-5 h-5" /></button>
-                                            }
-                                            {
-                                                p.status.toLowerCase() === 'pending' || p.status.toLowerCase() === 'approved' &&
-                                                <button
-                                                onClick={() => { setIsRejectModalOpen(true); setCurrentPropertyId(p._id) }}
-                                                className="bg-red-50 text-red-600 p-2.5 rounded-xl hover:bg-red-600 hover:text-white transition-all active:scale-95"
-                                                >
-                                                <CloseIcon className="w-5 h-5" />
-                                            </button>
-                                            }
+                                                <div className="flex justify-end gap-2">
+                                                    {
+                                                        (p.status.toLowerCase() === 'pending' || p.status.toLowerCase() === 'rejected') &&
 
-                                            <button onClick={() => handleDelete(p._id)} className="bg-red-600 text-white p-2.5 rounded-xl hover:bg-red-700 shadow-lg shadow-green-500/20 active:scale-95 transition-all"><Trash className="w-5 h-5" /></button>
-                                        </div>
+                                                        <button onClick={() => handleApprove(p._id)} className="bg-green-600 text-white p-2.5 rounded-xl hover:bg-green-700 shadow-lg shadow-green-500/20 active:scale-95 transition-all"><Check className="w-5 h-5" /></button>
+                                                    }
+                                                    {
+                                                        (p.status.toLowerCase() === 'pending' || p.status.toLowerCase() === 'approved') &&
+                                                        <button
+                                                            onClick={() => { setIsRejectModalOpen(true); setCurrentPropertyId(p._id) }}
+                                                            className="bg-red-50 text-red-600 p-2.5 rounded-xl hover:bg-red-600 hover:text-white transition-all active:scale-95"
+                                                        >
+                                                            <CloseIcon className="w-5 h-5" />
+                                                        </button>
+                                                    }
+
+                                                    <button onClick={() => handleDelete(p._id)} className="bg-red-600 text-white p-2.5 rounded-xl hover:bg-red-700 shadow-lg shadow-green-500/20 active:scale-95 transition-all"><Trash className="w-5 h-5" /></button>
+                                                </div>
 
 
 
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                }
             </motion.div>
 
 
@@ -239,6 +248,8 @@ const PropertiesTab = () => {
                             <div className="space-y-6">
                                 <p className="text-gray-500 font-medium">Please provide a reason for rejecting this property listing. The owner will see this feedback.</p>
                                 <textarea
+                                    value={rejectionReason}
+                                    onChange={(e) => setRejectionReason(e.target.value)}
                                     placeholder="Describe the issues found..."
                                     className="w-full p-6 bg-gray-50 dark:bg-gray-800 border-none rounded-3xl h-48 outline-none focus:ring-2 focus:ring-red-500 transition-all font-medium"
                                 />

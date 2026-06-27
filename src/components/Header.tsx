@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, LogOut, ChevronDown, Building2, Home, Search, LayoutDashboard, ShieldAlert } from 'lucide-react';
+import { Menu, X, LogOut, ChevronDown, Building2, Home, Search, LayoutDashboard, ShieldAlert, Loader2 } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 
 const Header = () => {
     const router = useRouter();
-    const { data } = authClient.useSession();
+    // Extracted isPending to track the initial loading state
+    const { data, isPending } = authClient.useSession();
     const [isOpen, setIsOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -79,7 +80,7 @@ const Header = () => {
                         ))}
 
                         {/* Conditional Dashboard Link */}
-                        {isLoggedIn && (
+                        {!isPending && isLoggedIn && (
                             <Link
                                 href={activeDashboard.href}
                                 className="text-gray-200 hover:text-blue-600 font-medium transition-colors"
@@ -89,8 +90,13 @@ const Header = () => {
                         )}
 
                         {/* Auth Section / Avatar Dropdown */}
-                        <div className="flex items-center space-x-4 ml-4">
-                            {isLoggedIn ? (
+                        <div className="flex items-center space-x-4 ml-4 justify-end">
+                            {isPending ? (
+                                <div className="flex items-center space-x-2 text-gray-300">
+                                    <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                                    <span className="text-sm font-medium">Loading...</span>
+                                </div>
+                            ) : isLoggedIn ? (
                                 <div className="relative">
                                     <button
                                         onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -186,62 +192,71 @@ const Header = () => {
                             </Link>
                         ))}
                         
-                        {isLoggedIn && (
-                            <>
-                                <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
-                                <Link
-                                    href={activeDashboard.href}
-                                    className="flex items-center space-x-2 px-3 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                                    onClick={() => setIsOpen(false)}
-                                >
-                                    <LayoutDashboard className="w-5 h-5 text-gray-500" />
-                                    <span>{activeDashboard.name}</span>
-                                </Link>
-                            </>
-                        )}
-                        
-                        <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
-                        
-                        {isLoggedIn ? (
-                            <div className="pt-2">
-                                <div className="flex items-center space-x-3 px-3 py-2 mb-4">
-                                    {user?.image ? (
-                                        <img src={user.image} alt={user.name || "User"} className="w-10 h-10 rounded-full object-cover" />
-                                    ) : (
-                                        <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
-                                            {getInitial()}
-                                        </div>
-                                    )}
-                                    <div className="truncate">
-                                        <p className="text-sm font-semibold capitalize text-gray-800 dark:text-gray-200">{user?.name}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={handleLogout}
-                                    className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 text-red-600 rounded-xl font-medium transition-colors"
-                                >
-                                    <LogOut className="w-5 h-5" />
-                                    <span>Logout</span>
-                                </button>
+                        {isPending ? (
+                            <div className="flex items-center justify-center space-x-2 py-4 text-gray-500 dark:text-gray-400">
+                                <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                                <span className="text-sm font-medium">Checking session...</span>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 gap-4 mt-6">
-                                <Link
-                                    href="/login"
-                                    onClick={() => setIsOpen(false)}
-                                    className="flex items-center justify-center px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                                >
-                                    Login
-                                </Link>
-                                <Link
-                                    href="/register"
-                                    onClick={() => setIsOpen(false)}
-                                    className="flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
-                                >
-                                    Register
-                                </Link>
-                            </div>
+                            <>
+                                {isLoggedIn && (
+                                    <>
+                                        <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
+                                        <Link
+                                            href={activeDashboard.href}
+                                            className="flex items-center space-x-2 px-3 py-3 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            <LayoutDashboard className="w-5 h-5 text-gray-500" />
+                                            <span>{activeDashboard.name}</span>
+                                        </Link>
+                                    </>
+                                )}
+                                
+                                <div className="border-t border-gray-100 dark:border-gray-800 my-2"></div>
+                                
+                                {isLoggedIn ? (
+                                    <div className="pt-2">
+                                        <div className="flex items-center space-x-3 px-3 py-2 mb-4">
+                                            {user?.image ? (
+                                                <img src={user.image} alt={user.name || "User"} className="w-10 h-10 rounded-full object-cover" />
+                                            ) : (
+                                                <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
+                                                    {getInitial()}
+                                                </div>
+                                            )}
+                                            <div className="truncate">
+                                                <p className="text-sm font-semibold capitalize text-gray-800 dark:text-gray-200">{user?.name}</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 text-red-600 rounded-xl font-medium transition-colors"
+                                        >
+                                            <LogOut className="w-5 h-5" />
+                                            <span>Logout</span>
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-2 gap-4 mt-6">
+                                        <Link
+                                            href="/login"
+                                            onClick={() => setIsOpen(false)}
+                                            className="flex items-center justify-center px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                        >
+                                            Login
+                                        </Link>
+                                        <Link
+                                            href="/register"
+                                            onClick={() => setIsOpen(false)}
+                                            className="flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
+                                        >
+                                            Register
+                                        </Link>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
