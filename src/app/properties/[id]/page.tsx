@@ -9,6 +9,7 @@ import {
     TrendingUp, CreditCard, X, Send, Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReviewSection from './ReviewSection';
 
 // TypeScript interfaces ensuring type safety against dynamic structural objects
 interface PropertyData {
@@ -26,7 +27,7 @@ interface PropertyData {
     extraFeatures: string[];
     amenities: string[];
     rating: number;
-    owner: {
+    ownerInfo: {
         id:string
         name: string;
         avatar: string;
@@ -234,40 +235,12 @@ export default function PropertyDetailsPage() {
                                 <p className="text-blue-600 font-semibold cursor-pointer">Write a review</p>
                             </div>
 
-                            <div className="space-y-6">
-                                {propertyDetails.reviews?.map(rev => (
-                                    <div key={rev.id} className="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl space-y-4">
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">{rev.name?.[0] || 'U'}</div>
-                                                <div>
-                                                    <p className="font-bold text-sm">{rev.name}</p>
-                                                    <p className="text-xs text-gray-500">{rev.date}</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex text-amber-500">
-                                                {[...Array(rev.rating || 5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
-                                            </div>
-                                        </div>
-                                        <p className="text-gray-600 dark:text-gray-400 italic">"{rev.text}"</p>
-                                    </div>
-                                ))}
-                            </div>
+                            
 
                             {/* Review Form UI */}
-                            <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-8 space-y-6 shadow-sm">
-                                <h4 className="font-bold text-lg">Leave a Review</h4>
-                                <div className="flex gap-2">
-                                    {[1, 2, 3, 4, 5].map(s => <Star key={s} className="w-6 h-6 cursor-pointer text-gray-200 hover:text-amber-500" />)}
-                                </div>
-                                <textarea
-                                    placeholder="Share your experience..."
-                                    className="w-full p-4 bg-gray-50 dark:bg-gray-800 border-none rounded-xl h-32 focus:ring-2 focus:ring-blue-600 outline-none transition-all"
-                                ></textarea>
-                                <button className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all flex items-center gap-2">
-                                    <Send className="w-4 h-4" /> Submit Review
-                                </button>
-                            </div>
+                            <ReviewSection reviews={propertyDetails.reviews} />
+
+
                         </div>
                     </div>
 
@@ -298,19 +271,18 @@ export default function PropertyDetailsPage() {
                                     </button>
                                 </div>
 
-                                {propertyDetails.owner && (
+                                {propertyDetails.ownerInfo && (
                                     <div className="pt-6 border-t border-gray-50 dark:border-gray-800 space-y-4">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">
-                                                    {propertyDetails.owner.avatar || propertyDetails.owner.name?.[0]}
+                                                    {propertyDetails.ownerInfo.name?.[0]}
                                                 </div>
                                                 <div>
                                                     <h4 className="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-1">
-                                                        {propertyDetails.owner.name}
-                                                        {propertyDetails.owner.verified && <ShieldCheck className="w-3 h-3 text-blue-500" />}
+                                                        {propertyDetails.ownerInfo.name}
+                                                        
                                                     </h4>
-                                                    <p className="text-xs text-gray-500">{propertyDetails.owner.joinDate}</p>
                                                 </div>
                                             </div>
                                             <button className="text-blue-600 p-2 hover:bg-blue-50 rounded-lg"><ChevronRight className="w-5 h-5" /></button>
@@ -425,7 +397,7 @@ export default function PropertyDetailsPage() {
                                         <div>
                                             <h2 className="text-3xl font-extrabold mb-4 text-gray-900 dark:text-white">Booking Successful!</h2>
                                             <p className="text-gray-500 max-w-sm mx-auto leading-relaxed">
-                                                Your booking request has been sent to {propertyDetails.owner?.name || 'the owner'}. You will receive an update in your dashboard shortly.
+                                                Your booking request has been sent to {propertyDetails.ownerInfo?.name || 'the owner'}. You will receive an update in your dashboard shortly.
                                             </p>
                                         </div>
                                         <Link

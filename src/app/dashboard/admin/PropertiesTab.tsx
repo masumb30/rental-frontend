@@ -11,6 +11,32 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast, ToastContainer } from 'react-toastify';
 import { authClient } from '@/lib/auth-client';
+export function formatReadableDate(isoString: string): string {
+        const date = new Date(isoString);
+
+        // Check for invalid date strings
+        if (isNaN(date.getTime())) {
+            throw new Error("Invalid ISO date string provided");
+        }
+
+        const day = date.getDate();
+
+        // Determine the correct ordinal suffix (st, nd, rd, th)
+        let suffix = "th";
+        if (day < 11 || day > 13) {
+            switch (day % 10) {
+                case 1: suffix = "st"; break;
+                case 2: suffix = "nd"; break;
+                case 3: suffix = "rd"; break;
+            }
+        }
+
+        // Get the lowercased full month name
+        const month = date.toLocaleString("en-US", { month: "long" }).toLowerCase();
+        const year = date.getFullYear();
+
+        return `${day}${suffix} ${month} ${year}`;
+    }
 
 const PropertiesTab = () => {
     const [rejectionReason, setRejectionReason] = useState('');
@@ -45,32 +71,7 @@ const PropertiesTab = () => {
 
         fetchProperties();
     }, [updateOccured]);
-    function formatReadableDate(isoString: string): string {
-        const date = new Date(isoString);
-
-        // Check for invalid date strings
-        if (isNaN(date.getTime())) {
-            throw new Error("Invalid ISO date string provided");
-        }
-
-        const day = date.getDate();
-
-        // Determine the correct ordinal suffix (st, nd, rd, th)
-        let suffix = "th";
-        if (day < 11 || day > 13) {
-            switch (day % 10) {
-                case 1: suffix = "st"; break;
-                case 2: suffix = "nd"; break;
-                case 3: suffix = "rd"; break;
-            }
-        }
-
-        // Get the lowercased full month name
-        const month = date.toLocaleString("en-US", { month: "long" }).toLowerCase();
-        const year = date.getFullYear();
-
-        return `${day}${suffix} ${month} ${year}`;
-    }
+    
     const handleDelete = async (id: string) => {
         try {
             setIsRejectModalOpen(false);
