@@ -1,78 +1,139 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import {
     MapPin, Star, Bed, Bath, Maximize, User, Calendar,
     Heart, Share2, ShieldCheck, CheckCircle2, ChevronRight,
-    TrendingUp, CreditCard, X, Send
+    TrendingUp, CreditCard, X, Send, Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Hardcoded data for a single property (simulating detail fetch)
-const propertyDetails = {
-    id: 1,
-    title: "Modern Skyline Villa",
-    location: "45-12 Manhattan Dr, New York, NY 10001",
-    price: 4500,
-    type: "Apartment",
-    description: "Experience the pinnacle of urban living in this stunning modern penthouse. Featuring floor-to-ceiling windows with panoramic skyline views, state-of-the-art kitchen appliances, and private terrace access. This property offers high-end finishes throughout, including white oak flooring and Carrara marble countertops. Located in the heart of the city, you're just minutes away from world-class dining, shopping, and transportation hubs.",
-    beds: 3,
-    baths: 2,
-    size: 1550,
-    images: [
-        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200",
-        // "https://images.unsplash.com/photo-1600607687940-4e52485e5d1c?auto=format&fit=crop&q=80&w=600",
-        // "https://images.unsplash.com/photo-1600566753190-17f0bb2a6c3e?auto=format&fit=crop&q=80&w=600",
-        // "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=600"
-    ],
-    features: ["Air Conditioning", "WiFi", "Gym access", "Private Balcony", "Smart Lock", "Pet Friendly", "Washer/Dryer", "Garbage Disposal"],
+// TypeScript interfaces ensuring type safety against dynamic structural objects
+interface PropertyData {
+    _id: string;
+    id: string;
+    title: string;
+    description: string;
+    location: string;
+    price: number;
+    type: string;
+    beds: number;
+    baths: number;
+    size: number;
+    images: string[];
+    extraFeatures: string[];
+    amenities: string[];
+    rating: number;
     owner: {
-        name: "Jonathan Wick",
-        joinDate: "Member since 2021",
-        avatar: "JW",
-        verified: true
-    },
-    reviews: [
-        { id: 1, name: "Alice Cooper", date: "June 2024", text: "Incredible view and very clean! The owner was very responsive.", rating: 5 },
-        { id: 2, name: "Robert Downy", date: "April 2024", text: "Good location, but the traffic can be noisy during rush hours.", rating: 4 },
-    ]
-};
+        id:string
+        name: string;
+        avatar: string;
+    };
+    reviews: Array<{
+        id: string;
+        name: string;
+        date: string;
+        rating: number;
+        text: string;
+    }>;
+}
 
 export default function PropertyDetailsPage() {
     const { id } = useParams();
+    const [propertyDetails, setPropertyDetails] = useState<PropertyData | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    
     const [activeImage, setActiveImage] = useState(0);
     const [isBookModalOpen, setIsBookModalOpen] = useState(false);
     const [step, setStep] = useState(1); // 1: Info, 2: Payment, 3: Success
     const [isFavorited, setIsFavorited] = useState(false);
 
+    useEffect(() => {
+        if (!id) return;
+
+        const fetchPropertyById = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/properties/${id}`);
+                if (!response.ok) {
+                    throw new Error('Failed to retrieve property details');
+                }
+                const result = await response.json();
+                
+                // Handles data shape matching standard response wrappers ({ data: {...} })
+                const targetData = result.data ? result.data : result;
+                setPropertyDetails(targetData);
+            } catch (err: any) {
+                console.error("Error fetching property item:", err);
+                setError(err.message || "An unexpected error occurred");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchPropertyById();
+    }, [id]);
+
+    // Loading View
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+                <p className="text-gray-500 dark:text-gray-400 font-bold animate-pulse">Loading property specifications...</p>
+            </div>
+        );
+    }
+
+    // Error Guard View
+    if (error || !propertyDetails) {
+        return (
+            <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col items-center justify-center gap-6 px-4">
+                <div className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 p-6 rounded-3xl border border-red-100 dark:border-red-900/30 max-w-md text-center">
+                    <h3 className="font-extrabold text-xl mb-2">Error Loading Property</h3>
+                    <p className="text-sm">{error || "The property details could not be found."}</p>
+                </div>
+                <Link href="/properties" className="bg-blue-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all">
+                    Back to All Properties
+                </Link>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-white dark:bg-gray-950 pt-14 pb-24">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Gallery Header */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12 ">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
                     <div className="lg:col-span-2 rounded-[2rem] overflow-hidden shadow-xl aspect-[16/10]">
-                        <img src={propertyDetails.images[activeImage]} alt="Main View" className="w-full h-full object-cover" />
+                        <img 
+                            src={propertyDetails.images?.[activeImage] || "/placeholder-property.jpg"} 
+                            alt="Main View" 
+                            className="w-full h-full object-cover" 
+                        />
                     </div>
 
-                    <div className="flex flex-col justify-between">
-                        {
-                            propertyDetails.images.length === 1 ? <div className="flex items-center justify-center h-full text-gray-500 italic " >
+                    <div className="flex flex-col justify-between gap-2 lg:gap-0">
+                        {!propertyDetails.images || propertyDetails.images.length <= 1 ? (
+                            <div className="flex items-center justify-center h-full text-gray-500 italic">
                                 <p className="text-lg border rounded-2xl p-5 w-full text-center">No More Images Available</p>
-                            </div> :
-
-                                propertyDetails.images.slice(0, 4).map((img, i) => (
-                                    <div
-                                        key={i}
-                                        onClick={() => setActiveImage(i)}
-                                        className={`relative cursor-pointer rounded-2xl overflow-hidden h-1/4 group border-4 transition-all duration-300 ${activeImage === i ? 'border-blue-600 scale-[1.02]' : 'border-transparent'}`}
-                                    >
-                                        <img src={img} alt={`Thumb ${i}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
-                                        <div className={`absolute inset-0 bg-black/20 ${activeImage === i ? 'hidden' : 'block'}`}></div>
-                                    </div>
-                                ))}
+                            </div>
+                        ) : (
+                            propertyDetails.images.slice(0, 4).map((img, i) => (
+                                <div
+                                    key={i}
+                                    onClick={() => setActiveImage(i)}
+                                    className={`relative cursor-pointer rounded-2xl overflow-hidden h-1/4 group border-4 transition-all duration-300 ${activeImage === i ? 'border-blue-600 scale-[1.02]' : 'border-transparent'}`}
+                                >
+                                    <img src={img} alt={`Thumb ${i}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                                    <div className={`absolute inset-0 bg-black/20 ${activeImage === i ? 'hidden' : 'block'}`}></div>
+                                </div>
+                            ))
+                        )}
                     </div>
-
                 </div>
 
                 {/* Info Grid */}
@@ -97,7 +158,7 @@ export default function PropertyDetailsPage() {
                                 <span className="mx-2 text-gray-300">|</span>
                                 <div className="flex items-center text-amber-500">
                                     <Star className="w-4 h-4 fill-current mr-1" />
-                                    <span className="font-bold">4.9 (12 reviews)</span>
+                                    <span className="font-bold">{propertyDetails.rating || '4.9'} ({propertyDetails.reviews?.length || 0} reviews)</span>
                                 </div>
                             </div>
 
@@ -146,8 +207,19 @@ export default function PropertyDetailsPage() {
                         <div className="space-y-6">
                             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Home Amenities</h3>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {propertyDetails.features.map((feat, i) => (
-                                    <div key={i} className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                                {propertyDetails.amenities?.map((feat, i) => (
+                                    <div key={i} className="flex gap-2 text-gray-600 dark:text-gray-400">
+                                        <CheckCircle2 className="w-5 h-5 text-green-500" />
+                                        <span>{feat}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="space-y-6">
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Extra Features</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {propertyDetails.extraFeatures?.map((feat, i) => (
+                                    <div key={i} className="flex  gap-2 text-gray-600 dark:text-gray-400">
                                         <CheckCircle2 className="w-5 h-5 text-green-500" />
                                         <span>{feat}</span>
                                     </div>
@@ -163,18 +235,18 @@ export default function PropertyDetailsPage() {
                             </div>
 
                             <div className="space-y-6">
-                                {propertyDetails.reviews.map(rev => (
+                                {propertyDetails.reviews?.map(rev => (
                                     <div key={rev.id} className="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl space-y-4">
                                         <div className="flex justify-between items-center">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">{rev.name[0]}</div>
+                                                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">{rev.name?.[0] || 'U'}</div>
                                                 <div>
                                                     <p className="font-bold text-sm">{rev.name}</p>
                                                     <p className="text-xs text-gray-500">{rev.date}</p>
                                                 </div>
                                             </div>
                                             <div className="flex text-amber-500">
-                                                {[...Array(rev.rating)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
+                                                {[...Array(rev.rating || 5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
                                             </div>
                                         </div>
                                         <p className="text-gray-600 dark:text-gray-400 italic">"{rev.text}"</p>
@@ -213,7 +285,10 @@ export default function PropertyDetailsPage() {
 
                                 <div className="space-y-4">
                                     <button
-                                        onClick={() => setIsBookModalOpen(true)}
+                                        onClick={() => {
+                                            setStep(1);
+                                            setIsBookModalOpen(true);
+                                        }}
                                         className="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/30 active:scale-95"
                                     >
                                         Book Now
@@ -223,23 +298,25 @@ export default function PropertyDetailsPage() {
                                     </button>
                                 </div>
 
-                                <div className="pt-6 border-t border-gray-50 dark:border-gray-800 space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">
-                                                {propertyDetails.owner.avatar}
+                                {propertyDetails.owner && (
+                                    <div className="pt-6 border-t border-gray-50 dark:border-gray-800 space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">
+                                                    {propertyDetails.owner.avatar || propertyDetails.owner.name?.[0]}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-1">
+                                                        {propertyDetails.owner.name}
+                                                        {propertyDetails.owner.verified && <ShieldCheck className="w-3 h-3 text-blue-500" />}
+                                                    </h4>
+                                                    <p className="text-xs text-gray-500">{propertyDetails.owner.joinDate}</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h4 className="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-1">
-                                                    {propertyDetails.owner.name}
-                                                    {propertyDetails.owner.verified && <ShieldCheck className="w-3 h-3 text-blue-500" />}
-                                                </h4>
-                                                <p className="text-xs text-gray-500">{propertyDetails.owner.joinDate}</p>
-                                            </div>
+                                            <button className="text-blue-600 p-2 hover:bg-blue-50 rounded-lg"><ChevronRight className="w-5 h-5" /></button>
                                         </div>
-                                        <button className="text-blue-600 p-2 hover:bg-blue-50 rounded-lg"><ChevronRight className="w-5 h-5" /></button>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -262,7 +339,7 @@ export default function PropertyDetailsPage() {
                             initial={{ opacity: 0, scale: 0.9, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="relative bg-white dark:bg-gray-950 w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden"
+                            className="relative bg-white dark:bg-gray-950 w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden text-gray-900 dark:text-gray-100"
                         >
                             <div className="p-10">
                                 <div className="flex justify-between items-center mb-10">
@@ -281,7 +358,7 @@ export default function PropertyDetailsPage() {
                                 {step === 1 && (
                                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                         <div>
-                                            <h2 className="text-3xl font-extrabold mb-2">Booking Inquiry</h2>
+                                            <h2 className="text-3xl font-extrabold mb-2 text-gray-900 dark:text-white">Booking Inquiry</h2>
                                             <p className="text-gray-500">Please provide your details to proceed with the booking.</p>
                                         </div>
                                         <div className="grid grid-cols-1 gap-6">
@@ -307,7 +384,7 @@ export default function PropertyDetailsPage() {
                                 {step === 2 && (
                                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                         <div>
-                                            <h2 className="text-3xl font-extrabold mb-2">Secure Payment</h2>
+                                            <h2 className="text-3xl font-extrabold mb-2 text-gray-900 dark:text-white">Secure Payment</h2>
                                             <p className="text-gray-500">Complete your reservation with a secure payment.</p>
                                         </div>
                                         <div className="bg-gray-50 dark:bg-gray-900 p-6 rounded-3xl space-y-4">
@@ -319,7 +396,7 @@ export default function PropertyDetailsPage() {
                                                 <span>First Month Rent</span>
                                                 <span>${propertyDetails.price}.00</span>
                                             </div>
-                                            <div className="border-t border-gray-200 pt-4 flex justify-between text-xl font-extrabold text-blue-600">
+                                            <div className="border-t border-gray-200 dark:border-gray-800 pt-4 flex justify-between text-xl font-extrabold text-blue-600">
                                                 <span>Total Due</span>
                                                 <span>${propertyDetails.price + 150}.00</span>
                                             </div>
@@ -346,9 +423,9 @@ export default function PropertyDetailsPage() {
                                             <CheckCircle2 className="w-12 h-12" />
                                         </div>
                                         <div>
-                                            <h2 className="text-3xl font-extrabold mb-4">Booking Successful!</h2>
+                                            <h2 className="text-3xl font-extrabold mb-4 text-gray-900 dark:text-white">Booking Successful!</h2>
                                             <p className="text-gray-500 max-w-sm mx-auto leading-relaxed">
-                                                Your booking request has been sent to Jonathan Wick. You will receive an update in your dashboard shortly.
+                                                Your booking request has been sent to {propertyDetails.owner?.name || 'the owner'}. You will receive an update in your dashboard shortly.
                                             </p>
                                         </div>
                                         <Link
