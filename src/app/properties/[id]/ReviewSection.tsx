@@ -33,7 +33,6 @@ const ReviewSection = ({ reviews: initialReviews }: ReviewSectionProps) => {
 
     const userRole = session?.user?.role?.toLowerCase();
     const isTenant = userRole === 'tenant';
-    console.log("user session: ", session);
 
     
 

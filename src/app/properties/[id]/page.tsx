@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReviewSection from './ReviewSection';
+import { authClient } from '@/lib/auth-client';
 
 // TypeScript interfaces ensuring type safety against dynamic structural objects
 interface PropertyData {
@@ -28,7 +29,7 @@ interface PropertyData {
     amenities: string[];
     rating: number;
     ownerInfo: {
-        id:string
+        id: string
         name: string;
         avatar: string;
     };
@@ -42,11 +43,13 @@ interface PropertyData {
 }
 
 export default function PropertyDetailsPage() {
+    const session = authClient.useSession();
+    console.log('user session from details page: ', session)
     const { id } = useParams();
     const [propertyDetails, setPropertyDetails] = useState<PropertyData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    
+
     const [activeImage, setActiveImage] = useState(0);
     const [isBookModalOpen, setIsBookModalOpen] = useState(false);
     const [step, setStep] = useState(1); // 1: Info, 2: Payment, 3: Success
@@ -64,7 +67,7 @@ export default function PropertyDetailsPage() {
                     throw new Error('Failed to retrieve property details');
                 }
                 const result = await response.json();
-                
+
                 // Handles data shape matching standard response wrappers ({ data: {...} })
                 const targetData = result.data ? result.data : result;
                 setPropertyDetails(targetData);
@@ -110,10 +113,10 @@ export default function PropertyDetailsPage() {
                 {/* Gallery Header */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
                     <div className="lg:col-span-2 rounded-[2rem] overflow-hidden shadow-xl aspect-[16/10]">
-                        <img 
-                            src={propertyDetails.images?.[activeImage] || "/placeholder-property.jpg"} 
-                            alt="Main View" 
-                            className="w-full h-full object-cover" 
+                        <img
+                            src={propertyDetails.images?.[activeImage] || "/placeholder-property.jpg"}
+                            alt="Main View"
+                            className="w-full h-full object-cover"
                         />
                     </div>
 
@@ -235,7 +238,7 @@ export default function PropertyDetailsPage() {
                                 <p className="text-blue-600 font-semibold cursor-pointer">Write a review</p>
                             </div>
 
-                            
+
 
                             {/* Review Form UI */}
                             <ReviewSection reviews={propertyDetails.reviews} />
@@ -281,7 +284,7 @@ export default function PropertyDetailsPage() {
                                                 <div>
                                                     <h4 className="font-bold text-gray-900 dark:text-white text-sm flex items-center gap-1">
                                                         {propertyDetails.ownerInfo.name}
-                                                        
+
                                                     </h4>
                                                 </div>
                                             </div>
@@ -314,14 +317,14 @@ export default function PropertyDetailsPage() {
                             className="relative bg-white dark:bg-gray-950 w-full max-w-xl rounded-[2.5rem] shadow-2xl overflow-hidden text-gray-900 dark:text-gray-100"
                         >
                             <div className="p-10">
-                                <div className="flex justify-between items-center mb-10">
-                                    <div className="flex items-center gap-4">
+                                <div className="flex justify-end items-center mb-10">
+                                    {/* <div className="flex items-center gap-4">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm ${step >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-400'}`}>1</div>
                                         <div className={`w-12 h-[2px] ${step >= 2 ? 'bg-blue-600' : 'bg-gray-100'}`}></div>
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-400'}`}>2</div>
                                         <div className={`w-12 h-[2px] ${step >= 3 ? 'bg-blue-600' : 'bg-gray-100'}`}></div>
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm ${step >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-400'}`}>3</div>
-                                    </div>
+                                    </div> */}
                                     <button onClick={() => setIsBookModalOpen(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all">
                                         <X className="w-6 h-6" />
                                     </button>
@@ -333,27 +336,42 @@ export default function PropertyDetailsPage() {
                                             <h2 className="text-3xl font-extrabold mb-2 text-gray-900 dark:text-white">Booking Inquiry</h2>
                                             <p className="text-gray-500">Please provide your details to proceed with the booking.</p>
                                         </div>
-                                        <div className="grid grid-cols-1 gap-6">
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-bold flex items-center gap-2"><Calendar className="w-4 h-4 text-blue-600" /> Preferred Move-in Date</label>
-                                                <input type="date" className="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-600" />
+                                        <form action="/api/checkout_sessions" method="POST">
+
+
+                                            {/* hidden fields */}
+                                            <input type="hidden" name="propertyId" value={propertyDetails._id || propertyDetails.id} />
+                                            <input type="hidden" name="propertyTitle" value={propertyDetails.title} />
+                                            <input type="hidden" name="propertyPrice" value={propertyDetails.price} />
+                                            <input type="hidden" name="userName" value={(session as any)?.data?.user?.name} />
+                                            <input type="hidden" name="userId" value={(session as any)?.data?.user?.id} />
+                                            <input type="hidden" name="propertyOwner" value={propertyDetails.ownerInfo?.name} />
+                                            <input type="hidden" name="propertyOwnerId" value={propertyDetails.ownerInfo?.id} />
+                                            {/* hidden fields */}
+
+
+                                            <div className="grid grid-cols-1 gap-6">
+                                                <div className="space-y-2">
+                                                    <label className="text-sm font-bold flex items-center gap-2"><Calendar className="w-4 h-4 text-blue-600" /> Preferred Move-in Date</label>
+                                                    <input name="moveInDate" type="date" className="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-600" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-sm font-bold flex items-center gap-2"><User className="w-4 h-4 text-blue-600" /> Contact Number</label>
+                                                    <input name="contactNumber" type="tel" placeholder="+1 (212) 000-0000" className="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-600" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-sm font-bold">Notes for Owner</label>
+                                                    <textarea name="notes" placeholder="Anything else we should know?" className="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl h-24 outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+                                                </div>
                                             </div>
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-bold flex items-center gap-2"><User className="w-4 h-4 text-blue-600" /> Contact Number</label>
-                                                <input type="tel" placeholder="+1 (212) 000-0000" className="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-600" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-sm font-bold">Notes for Owner</label>
-                                                <textarea placeholder="Anything else we should know?" className="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl h-24 outline-none focus:ring-2 focus:ring-blue-600"></textarea>
-                                            </div>
-                                        </div>
-                                        <button onClick={() => setStep(2)} className="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all">
-                                            Proceed to Payment
-                                        </button>
+                                            <button type="submit" className="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all">
+                                                Proceed to Payment
+                                            </button>
+                                        </form>
                                     </div>
                                 )}
 
-                                {step === 2 && (
+                                {/* {step === 2 && (
                                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                         <div>
                                             <h2 className="text-3xl font-extrabold mb-2 text-gray-900 dark:text-white">Secure Payment</h2>
@@ -387,9 +405,9 @@ export default function PropertyDetailsPage() {
                                             Pay <span className="font-extrabold">${propertyDetails.price + 150}</span>
                                         </button>
                                     </div>
-                                )}
+                                )} */}
 
-                                {step === 3 && (
+                                {/* {step === 3 && (
                                     <div className="text-center space-y-8 py-10 animate-in fade-in zoom-in duration-700">
                                         <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 scale-110">
                                             <CheckCircle2 className="w-12 h-12" />
@@ -408,12 +426,19 @@ export default function PropertyDetailsPage() {
                                             Go to My Bookings
                                         </Link>
                                     </div>
-                                )}
+                                )} */}
                             </div>
                         </motion.div>
                     </div>
                 )}
             </AnimatePresence>
+
+            <form action="/api/checkout_sessions" method="POST">
+                {/* Hidden inputs containing data for Stripe */}
+
+
+
+            </form>
         </div>
     );
 }
