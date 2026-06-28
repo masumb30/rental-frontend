@@ -52,6 +52,7 @@ export default function SuccessPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            propertyTitle: metadata?.propertyTitle,
             userId: metadata?.userId,
             userName: metadata?.userName,
             propertyOwner: metadata?.propertyOwner,
@@ -60,6 +61,7 @@ export default function SuccessPage() {
             moveInDate: metadata?.moveInDate,
             contactNumber: metadata?.contactNumber,
             notes: metadata?.notes,
+            status:metadata?.status,
             stripePaymentId,
             amountPaid
           })

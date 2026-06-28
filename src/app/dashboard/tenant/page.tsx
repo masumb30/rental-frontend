@@ -7,6 +7,7 @@ import {
     Clock, CheckCircle2, AlertCircle
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import BookingTab from './BookingTab';
 
 const bookings = [
     { id: "BK-9012", name: "Modern Skyline Villa", date: "June 15, 2024", amount: 4650, status: "Confirmed", payment: "Paid" },
@@ -56,47 +57,7 @@ export default function TenantDashboard() {
                     {/* Main Content */}
                     <main className="flex-1">
                         {activeTab === 'bookings' && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="text-2xl font-bold">Booking History</h3>
-                                    <div className="flex gap-2">
-                                        <span className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-lg uppercase tracking-wider">Active</span>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-                                    <table className="w-full text-left">
-                                        <thead>
-                                            <tr className="bg-gray-50 dark:bg-gray-800/50">
-                                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Property</th>
-                                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Booking Date</th>
-                                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Amount</th>
-                                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                                            {bookings.map((booking) => (
-                                                <tr key={booking.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
-                                                    <td className="px-6 py-6 font-bold">{booking.name}</td>
-                                                    <td className="px-6 py-6 text-gray-500 text-sm">{booking.date}</td>
-                                                    <td className="px-6 py-6 font-bold">${booking.amount}</td>
-                                                    <td className="px-6 py-6">
-                                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${booking.status === 'Confirmed' ? 'bg-green-100 text-green-600' :
-                                                                booking.status === 'Pending' ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'
-                                                            }`}>
-                                                            {booking.status}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-6 text-right">
-                                                        <button className="text-blue-600 hover:bg-blue-50 p-2 rounded-lg"><ExternalLink className="w-4 h-4" /></button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </motion.div>
+                            <BookingTab />
                         )}
 
                         {activeTab === 'favorites' && (

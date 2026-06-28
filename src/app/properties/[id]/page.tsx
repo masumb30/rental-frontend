@@ -340,7 +340,7 @@ export default function PropertyDetailsPage() {
 
 
                                             {/* hidden fields */}
-                                            <input type="hidden" name="propertyId" value={propertyDetails._id || propertyDetails.id} />
+                                            <input type="hidden" name="propertyId" value={propertyDetails._id} />
                                             <input type="hidden" name="propertyTitle" value={propertyDetails.title} />
                                             <input type="hidden" name="propertyPrice" value={propertyDetails.price} />
                                             <input type="hidden" name="userName" value={(session as any)?.data?.user?.name} />

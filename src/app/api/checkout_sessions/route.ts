@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
 
       // Save data inside metadata so it remains preserved when checking transaction logs
       metadata: {
+        propertyTitle,
         propertyId,
         moveInDate,
         contactNumber,
@@ -72,7 +73,8 @@ export async function POST(request: NextRequest) {
         userId,
         propertyOwner,
         propertyOwnerId,
-        propertyPrice
+        propertyPrice,
+        status: 'pending'
       }
     });
     return NextResponse.redirect((session as any).url, 303)
