@@ -9,21 +9,21 @@ import {
 import { motion } from 'framer-motion';
 import { authClient } from '@/lib/auth-client';
 export interface Booking {
-  _id: string;
-  amountPaid: number;
-  contactNumber: string;
-  createdAt: string; // ISO Date String
-  moveInDate: string; // YYYY-MM-DD format
-  notes: string;
-  propertyId: string;
-  propertyOwner: string;
-  propertyOwnerId: string;
-  stripePaymentId: string;
-  updatedAt: string; // ISO Date String
-  userId: string;
-  userName: string;
-  propertyTitle: string;
-  status: string;
+    _id: string;
+    amountPaid: number;
+    contactNumber: string;
+    createdAt: string; // ISO Date String
+    moveInDate: string; // YYYY-MM-DD format
+    notes: string;
+    propertyId: string;
+    propertyOwner: string;
+    propertyOwnerId: string;
+    stripePaymentId: string;
+    updatedAt: string; // ISO Date String
+    userId: string;
+    userName: string;
+    propertyTitle: string;
+    status: string;
 }
 
 const BookingTab = () => {
@@ -31,33 +31,33 @@ const BookingTab = () => {
     const [bookings, setBookings] = useState([]);
     const [error, setError] = useState(null);
     const [updateOccured, setUpdateOccurred] = useState(1);
-    
+
     React.useEffect(() => {
-            const fetchBookings = async () => {
-                try {
-                    const session = await authClient.getSession();
-                    console.log("Session: ", session);
-                    const userId = (session as any)?.data?.user?.id;
-                    setLoading(true);
-                    // Replace with your actual API endpoint URL
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/booking/getbookingforuser/${userId}`, { cache: 'no-store' });
-    
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch platform properties');
-                    }
-    
-                    const data = await response.json();
-                    console.log("Fetched properties:", data);
-                    setBookings(data.data);
-                } catch (err: any) {
-                    setError(err.message);
-                } finally {
-                    setLoading(false);
+        const fetchBookings = async () => {
+            try {
+                const session = await authClient.getSession();
+                console.log("Session: ", session);
+                const userId = (session as any)?.data?.user?.id;
+                setLoading(true);
+                // Replace with your actual API endpoint URL
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/booking/getbookingforuser/${userId}`, { cache: 'no-store' });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch platform properties');
                 }
-            };
-    
-            fetchBookings();
-        }, [updateOccured]);
+
+                const data = await response.json();
+                console.log("Fetched properties:", data);
+                setBookings(data.data);
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBookings();
+    }, [updateOccured]);
 
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
@@ -79,7 +79,7 @@ const BookingTab = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                        {bookings.map((booking:Booking) => (
+                        {bookings.map((booking: Booking) => (
                             <tr key={booking._id} className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
                                 <td className="px-6 py-6 font-bold">{booking.propertyTitle}</td>
                                 <td className="px-6 py-6 text-gray-500 text-sm">{booking.moveInDate}</td>
@@ -91,7 +91,7 @@ const BookingTab = () => {
                                         {booking.status}
                                     </span>
                                 </td>
-                                
+
                             </tr>
                         ))}
                     </tbody>
