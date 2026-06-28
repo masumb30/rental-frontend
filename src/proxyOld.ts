@@ -17,31 +17,22 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(loginUrl);
     }
 
-    // Ensure we have a clean lowercase string for role comparison
-    const userRole = session.user.role?.toLowerCase() || 'tenant'; 
-
-    // 2. Fix for the Login Redirect Preference Loop:
-    // If a user just logged in and lands on a generic dashboard path or an explicit wrong-role path,
-    // intercept and route them to their actual home layout context.
-    if (pathname === "/dashboard" || pathname === "/dashboard/") {
-        return NextResponse.redirect(new URL(`/dashboard/${userRole}`, request.url));
-    }
-
-    // 3. Authorization Check: Role-based routing protection
+    // 2. Authorization Check: Role-based routing protection
     if (pathname.startsWith("/dashboard")) {
-        
-        // Guard Admin Dashboard: ONLY admins allowed
+        const userRole = session.user.role?.toLowerCase(); // e.g., 'tenant', 'owner', 'admin'
+
+        // Guard Admin Dashboard
         if (pathname.startsWith("/dashboard/admin") && userRole !== "admin") {
             return NextResponse.redirect(new URL(`/dashboard/${userRole}`, request.url));
         }
 
-        // Guard Owner Dashboard: Only owners allowed (Admins should go to /dashboard/admin instead of squatting here)
-        if (pathname.startsWith("/dashboard/owner") && userRole !== "owner") {
+        // Guard Owner Dashboard
+        if (pathname.startsWith("/dashboard/owner") && userRole !== "owner" && userRole !== "admin") {
             return NextResponse.redirect(new URL(`/dashboard/${userRole}`, request.url));
         }
 
-        // Guard Tenant Dashboard: Only tenants allowed
-        if (pathname.startsWith("/dashboard/tenant") && userRole !== "tenant") {
+        // Guard Tenant Dashboard
+        if (pathname.startsWith("/dashboard/tenant") && userRole !== "tenant" && userRole !== "admin") {
             return NextResponse.redirect(new URL(`/dashboard/${userRole}`, request.url));
         }
     }
@@ -50,6 +41,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-    // Target all sub-routes of /dashboard and sub-routes of /properties
+    // We target all sub-routes of /dashboard and sub-routes of /properties
     matcher: ["/dashboard/:path*", "/properties/:path+"], 
 };

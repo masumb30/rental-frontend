@@ -9,20 +9,16 @@ import {
 import { motion } from 'framer-motion';
 import BookingTab from './BookingTab';
 import FavoriteTab from './FavoriteTab';
-
-const bookings = [
-    { id: "BK-9012", name: "Modern Skyline Villa", date: "June 15, 2024", amount: 4650, status: "Confirmed", payment: "Paid" },
-    { id: "BK-8841", name: "Urban Loft", date: "May 20, 2024", amount: 3100, status: "Completed", payment: "Paid" },
-    { id: "BK-7723", name: "Beachfront Paradise", date: "August 10, 2024", amount: 5350, status: "Pending", payment: "Unpaid" },
-];
-
-const favorites = [
-    { id: 1, title: "Lakeside Cabin", location: "Lake Tahoe", price: 4200, type: "Cabin", image: "https://images.unsplash.com/photo-1464146072230-91cabc9fa7c0?auto=format&fit=crop&q=80&w=400" },
-    { id: 2, title: "Modern Farmhouse", location: "Nashville", price: 3800, type: "House", image: "https://images.unsplash.com/photo-1549517045-bc93de075e53?auto=format&fit=crop&q=80&w=400" },
-];
+import ProfileTab from './ProfileTab';
+// Import your session client helper
+import { authClient } from '@/lib/auth-client';
 
 export default function TenantDashboard() {
     const [activeTab, setActiveTab] = useState('bookings');
+    
+    // Fetch live user session data
+    const { data, isPending } = authClient.useSession();
+    const userData = data?.user;
 
     const tabs = [
         { id: 'bookings', name: 'My Bookings', icon: ShoppingBag },
@@ -30,19 +26,55 @@ export default function TenantDashboard() {
         { id: 'profile', name: 'Profile', icon: User },
     ];
 
+    // Helper to extract clean initials from names
+    const getInitials = (name: string) => {
+        if (!name) return "U";
+        return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pt-16 pb-24">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col lg:flex-row gap-12">
                     {/* Sidebar */}
                     <aside className="lg:w-64 flex flex-col gap-2">
-                        <div className="p-6 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 mb-6">
-                            <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mb-4">
-                                JD
-                            </div>
-                            <h2 className="font-bold text-lg">John Doe</h2>
-                            <p className="text-sm text-gray-500">Tenant Level: Gold</p>
+                        {/* Redesigned Sidebar User Card with Live Session Logic */}
+                        <div className="p-6 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 mb-6 min-h-[168px] flex flex-col justify-center">
+                            {isPending ? (
+                                <div className="flex items-center justify-center py-4">
+                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                                </div>
+                            ) : userData ? (
+                                <>
+                                    {userData.image ? (
+                                        <img 
+                                            src={userData.image} 
+                                            alt={userData.name} 
+                                            className="w-16 h-16 rounded-2xl object-cover mb-4 ring-2 ring-gray-100 dark:ring-gray-800"
+                                        />
+                                    ) : (
+                                        <div className="w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl mb-4 shadow-md shadow-blue-500/10">
+                                            {getInitials(userData.name)}
+                                        </div>
+                                    )}
+                                    <h2 className="font-bold text-lg truncate" title={userData.name}>
+                                        {userData.name}
+                                    </h2>
+                                    <p className="text-xs text-gray-500 font-medium capitalize mt-0.5">
+                                        Role: {userData.role || 'Tenant'}
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="w-16 h-16 bg-gray-200 dark:bg-gray-800 rounded-2xl flex items-center justify-center text-gray-400 mb-4">
+                                        <User className="w-6 h-6" />
+                                    </div>
+                                    <h2 className="font-bold text-lg text-gray-400">Guest User</h2>
+                                    <p className="text-xs text-gray-400 mt-0.5">Please sign in</p>
+                                </>
+                            )}
                         </div>
+
                         {tabs.map(tab => (
                             <button
                                 key={tab.id}
@@ -66,41 +98,7 @@ export default function TenantDashboard() {
                         )}
 
                         {activeTab === 'profile' && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 p-10 space-y-10 shadow-sm">
-                                <div className="flex items-center gap-6">
-                                    <div className="w-24 h-24 bg-blue-600 rounded-[2rem] flex items-center justify-center text-white font-bold text-4xl shadow-xl shadow-blue-500/20">JD</div>
-                                    <div className="space-y-1">
-                                        <h3 className="text-2xl font-bold">John Doe</h3>
-                                        <p className="text-gray-500">john.doe@example.com</p>
-                                        <div className="flex gap-2 pt-2">
-                                            <span className="px-2 py-0.5 bg-green-100 text-green-600 text-[10px] font-bold rounded uppercase">Verified Identity</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Phone Number</label>
-                                        <p className="font-bold px-5 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl">+1 (555) 123-4567</p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Nationality</label>
-                                        <p className="font-bold px-5 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl">United States</p>
-                                    </div>
-                                    <div className="space-y-2 col-span-1 md:col-span-2">
-                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Bio / Intro</label>
-                                        <p className="font-medium px-5 py-4 bg-gray-50 dark:bg-gray-800 rounded-2xl text-gray-600 leading-relaxed">
-                                            Lover of modern architectures and city skylines. Working as a product designer in Manhattan. Searching for a new home with plenty of natural light.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="pt-6 border-t border-gray-100 dark:border-gray-800">
-                                    <button className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95">
-                                        Update Profile
-                                    </button>
-                                </div>
-                            </motion.div>
+                            <ProfileTab />
                         )}
                     </main>
                 </div>
