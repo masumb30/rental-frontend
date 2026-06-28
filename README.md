@@ -1,37 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RentEase 🎬 [Live Demo](https://rental-frontend-26fc.onrender.com/)
 
-## Getting Started
+**RentEase** is a modern, responsive, and feature-rich Property Rental & Booking Platform. It bridges the gap between property owners looking to list their rentals and tenants seeking a seamless discovery, booking, and online payment experience.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Key Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🔹 Public Features
+* **Dynamic Landing Page:** Features an interactive hero banner with a comprehensive search/filter bar, featured property showcases, and dynamic tenant reviews.
+* **All Properties Page:** High-performance grid layout with advanced backend-driven searching, filtering (by property type), and price sorting (low-to-high / high-to-low).
+* **Framer Motion Animations:** Smooth, fluid, and modern entry/staggered transitions applied across the landing page elements to capture recruiter attention.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🔹 Tenant Dashboard
+* **Property Management:** Detailed property views, custom dynamic booking modal (Move-in date, notes, contact info).
+* **Secure Checkout:** Fully integrated **Stripe Payment Gateway** for fast, reliable tokenized transactions.
+* **Favorites & Bookings:** Dedicated tables to track favorites (with removal actions) and booking status (`Pending`, `Approved`, `Rejected`).
+* **Review System:** Rate and write text reviews directly from the platform.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🔹 Owner Dashboard
+* **Analytics Hub:** Visual metrics cards tracking total earnings, total listings, and a dynamic **Recharts Line Chart** tracking 12-month historical revenue.
+* **Listing Workflow:** Interactive multi-field creation form for new properties (auto-set to `Pending` for admin moderation).
+* **Booking Actions:** Dedicated interface to instantly `Approve` or `Reject` prospective tenant requests.
+* **Rejection Transparency:** Direct inline access (👁️) to read feedback notes left by administrators on rejected properties.
 
-## Learn More
+### 🔹 Admin Dashboard
+* **User Moderation:** System-wide table tracking registered users with full RBAC role toggles.
+* **Property & Booking Controls:** Approve/Reject pending properties with custom validation feedback modals.
+* **Transaction Auditing:** Transparent, sortable accounting tables showing Transaction IDs, parties involved, amounts, and exact dates.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠️ Tech Stack & Packages Used
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+* **Framework:** Next.js 16 (App Router)
+* **Language:** TypeScript
+* **Styling:** Tailwind CSS & DaisyUI
+* **Authentication:** Better Auth (with secure JWT patterns and Google Social Sign-In)
+* **Animations:** Framer Motion
+* **Charts:** Recharts
+* **Payment Processing:** `@stripe/stripe-js` & `@stripe/react-stripe-js`
+* **Icons:** Lucide React
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📦 Environment Variables Configuration
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# rental-frontend
+Create a `.env.local` file in your root folder and set up the following keys:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=[https://your-backend-link.onrender.com/api](https://your-backend-link.onrender.com/api)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+BETTER_AUTH_SECRET=your_better_auth_secret
+NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
