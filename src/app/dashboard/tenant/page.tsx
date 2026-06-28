@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import BookingTab from './BookingTab';
+import FavoriteTab from './FavoriteTab';
 
 const bookings = [
     { id: "BK-9012", name: "Modern Skyline Villa", date: "June 15, 2024", amount: 4650, status: "Confirmed", payment: "Paid" },
@@ -61,26 +62,7 @@ export default function TenantDashboard() {
                         )}
 
                         {activeTab === 'favorites' && (
-                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {favorites.map(item => (
-                                    <div key={item.id} className="bg-white dark:bg-gray-900 p-4 rounded-3xl border border-gray-100 dark:border-gray-800 flex gap-4 group">
-                                        <img src={item.image} className="w-24 h-24 rounded-2xl object-cover" alt="" />
-                                        <div className="flex-1 flex flex-col justify-between py-1">
-                                            <div>
-                                                <h4 className="font-bold">{item.title}</h4>
-                                                <p className="text-xs text-gray-500 flex items-center gap-1 mt-1"><MapPin className="w-3 h-3" /> {item.location}</p>
-                                            </div>
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-blue-600 font-bold">${item.price}</span>
-                                                <div className="flex gap-2">
-                                                    <button className="text-gray-400 hover:text-red-500 p-1"><Trash2 className="w-4 h-4" /></button>
-                                                    <button className="text-gray-400 hover:text-blue-500 p-1"><ExternalLink className="w-4 h-4" /></button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </motion.div>
+                            <FavoriteTab />
                         )}
 
                         {activeTab === 'profile' && (

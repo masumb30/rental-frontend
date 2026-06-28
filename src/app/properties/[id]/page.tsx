@@ -11,6 +11,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import ReviewSection from './ReviewSection';
 import { authClient } from '@/lib/auth-client';
+import { toast, ToastContainer } from 'react-toastify';
 
 // TypeScript interfaces ensuring type safety against dynamic structural objects
 interface PropertyData {
@@ -54,6 +55,27 @@ export default function PropertyDetailsPage() {
     const [isBookModalOpen, setIsBookModalOpen] = useState(false);
     const [step, setStep] = useState(1); // 1: Info, 2: Payment, 3: Success
     const [isFavorited, setIsFavorited] = useState(false);
+
+    const handleAddToFavorite = async () => {
+        const userId = (session as any)?.data?.user?.id;
+        const propertyId = id;
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/properties/createfavorite/${userId}/${propertyId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            if (!response.ok) {
+                throw new Error('Failed to add to favorites');
+            }
+            toast.success('Property added to favorites!');
+            setIsFavorited(true);
+        } catch (err: any) {
+            console.error(err);
+            toast.error('Failed to add to favorites');
+        }
+
+
+    }
 
     useEffect(() => {
         if (!id) return;
@@ -109,6 +131,7 @@ export default function PropertyDetailsPage() {
 
     return (
         <div className="min-h-screen bg-white dark:bg-gray-950 pt-14 pb-24">
+            <ToastContainer />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Gallery Header */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
@@ -148,7 +171,7 @@ export default function PropertyDetailsPage() {
                             <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
                                 <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white">{propertyDetails.title}</h1>
                                 <div className="flex gap-2">
-                                    <button onClick={() => setIsFavorited(!isFavorited)} className={`p-3 rounded-full border transition-all ${isFavorited ? 'bg-red-50 border-red-200 text-red-500' : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-400 hover:text-red-500'}`}>
+                                    <button onClick={handleAddToFavorite} className={`p-3 rounded-full border transition-all ${isFavorited ? 'bg-red-50 border-red-200 text-red-500' : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-400 hover:text-red-500'}`}>
                                         <Heart className={`w-6 h-6 ${isFavorited ? 'fill-current' : ''}`} />
                                     </button>
                                     <button className="p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-full text-gray-400 hover:text-blue-500 transition-all">

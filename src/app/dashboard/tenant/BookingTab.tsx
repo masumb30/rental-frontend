@@ -23,6 +23,7 @@ export interface Booking {
   userId: string;
   userName: string;
   propertyTitle: string;
+  status: string;
 }
 
 const BookingTab = () => {
@@ -72,10 +73,9 @@ const BookingTab = () => {
                     <thead>
                         <tr className="bg-gray-50 dark:bg-gray-800/50">
                             <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Property</th>
-                            <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Booking Date</th>
+                            <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Move in Date</th>
                             <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Amount</th>
                             <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
@@ -84,16 +84,14 @@ const BookingTab = () => {
                                 <td className="px-6 py-6 font-bold">{booking.propertyTitle}</td>
                                 <td className="px-6 py-6 text-gray-500 text-sm">{booking.moveInDate}</td>
                                 <td className="px-6 py-6 font-bold">${booking.amountPaid}</td>
-                                {/* <td className="px-6 py-6">
+                                <td className="px-6 py-6">
                                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${booking.status === 'Confirmed' ? 'bg-green-100 text-green-600' :
                                         booking.status === 'Pending' ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'
                                         }`}>
                                         {booking.status}
                                     </span>
-                                </td> */}
-                                <td className="px-6 py-6 text-right">
-                                    <button className="text-blue-600 hover:bg-blue-50 p-2 rounded-lg"><ExternalLink className="w-4 h-4" /></button>
                                 </td>
+                                
                             </tr>
                         ))}
                     </tbody>
