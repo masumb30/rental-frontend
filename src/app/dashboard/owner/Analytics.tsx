@@ -14,6 +14,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Analytics = ({ chartData }: { chartData: any[] }) => {
+    
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
